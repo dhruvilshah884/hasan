@@ -3,18 +3,12 @@ const app = express();
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = require('./models/user');
-const session = require('express-session');
 const cors = require('cors');
 app.use(cors())
-app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true,
-    secure:true
-  }))
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-mongoose.connect('mongodb://127.0.0.1:27017/hasan').then(()=>{
+mongoose.connect(process.env.mongo_url).then(()=>{
     console.log('database connected')
 })
 app.get('/',(req,res)=>{
@@ -38,7 +32,7 @@ app.post('/login', async (req, res) => {
         if (user.password !== password) {
             return res.status(400).json({ message: "password is incorrect" });
         }
-        req.session.user = user;
+     
         return  res.status(201).json({message:"user login successfully",user})
     
     } catch (error) {
